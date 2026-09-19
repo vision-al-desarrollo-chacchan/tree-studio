@@ -1,0 +1,39 @@
+{
+  "url": "http://127.0.0.1:8080/",
+  "viewports": {
+    "desktop": {
+      "width": 1280,
+      "height": 800,
+      "status": 200,
+      "title": "Ramaje",
+      "hasCanvas": true,
+      "bodyTextLen": 192,
+      "bodyTextHash": "a815a5482c4f784c006b494bf2b8ae418b50e583a70c0239c8bacb02c5bb1172",
+      "bodyTextPrefix": "Ramaje Un árbol fractal vivo Regenerar Ángulo 26° Profundidad 8 ",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/app-builder-preview.png"
+    },
+    "mobile": {
+      "width": 390,
+      "height": 844,
+      "status": 200,
+      "title": "Ramaje",
+      "hasCanvas": true,
+      "bodyTextLen": 181,
+      "bodyTextHash": "10286b9b4ec089217987eac228b703f6a222205f3866f4c3b0d42b402355971d",
+      "bodyTextPrefix": "Ramaje Un árbol fractal vivo Regenerar Ángulo 26° Profundidad 8 ",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/app-builder-preview-mobile.png"
+    }
+  },
+  "brandWarnings": [
+    "BRAND WARNING: this looks like a game/canvas app but src/lib/og/site.json is missing \"type\": \"x:game\". X uses og:type=x:game to present the unfurl as a game card — set it in /workspace/src/lib/og/site.json per /workspace/.grok/skills/og/SKILL.md. Do not invent x:type or overload twitter:card as the game signal.",
+    "BRAND WARNING: this looks like a game/canvas app but /workspace/public/x-banner.jpg is missing. Games need a 50:11 X feed card (1200×264 JPEG) at public/x-banner.jpg — open /workspace/.grok/skills/og/SKILL.md and finish the brand-asset pass."
+  ],
+  "authWarnings": [],
+  "verdictFile": "/workspace/screenshots/app-builder-preview.json"
+}
