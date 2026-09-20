@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import type { OverlayMode, PaletteId } from "@/lib/tree/types";
+import type { Atmosphere, OverlayMode, PaletteId, Season } from "@/lib/tree/types";
 
 export type TreeState = {
   seed: number;
@@ -10,6 +10,8 @@ export type TreeState = {
   wind: number;
   paletteId: PaletteId;
   overlay: OverlayMode;
+  season: Season;
+  atmosphere: Atmosphere;
   growNonce: number;
   regenerate: () => void;
   setAngle: (angle: number) => void;
@@ -18,6 +20,8 @@ export type TreeState = {
   setWind: (wind: number) => void;
   setPaletteId: (paletteId: PaletteId) => void;
   setOverlay: (overlay: OverlayMode) => void;
+  setSeason: (season: Season) => void;
+  setAtmosphere: (atmosphere: Atmosphere) => void;
 };
 
 const DEFAULT_SEED = 0x51a7e3;
@@ -32,6 +36,8 @@ export const useTreeStore = create<TreeState>()(
       wind: 0.42,
       paletteId: "bosque",
       overlay: "leaves",
+      season: "summer",
+      atmosphere: "clear",
       growNonce: 0,
       regenerate: () =>
         set({
@@ -44,6 +50,20 @@ export const useTreeStore = create<TreeState>()(
       setWind: (wind) => set({ wind }),
       setPaletteId: (paletteId) => set({ paletteId }),
       setOverlay: (overlay) => set({ overlay }),
+      setSeason: (season) =>
+        set({
+          season,
+          paletteId:
+            season === "spring"
+              ? "cerezo"
+              : season === "autumn"
+                ? "otono"
+                : season === "winter"
+                  ? "niebla"
+                  : "bosque",
+          overlay: season === "spring" ? "both" : season === "winter" ? "none" : "leaves",
+        }),
+      setAtmosphere: (atmosphere) => set({ atmosphere }),
     }),
     {
       name: "ramaje-v1",
@@ -55,6 +75,8 @@ export const useTreeStore = create<TreeState>()(
         wind: s.wind,
         paletteId: s.paletteId,
         overlay: s.overlay,
+        season: s.season,
+        atmosphere: s.atmosphere,
       }),
     },
   ),
