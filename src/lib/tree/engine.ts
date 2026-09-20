@@ -3,10 +3,12 @@ import { generateTree, maxGrowTime } from "./generate";
 import { PALETTES } from "./palettes";
 import type {
   Branch,
+  Atmosphere,
   OverlayMode,
   Palette,
   PaletteId,
   Rgb,
+  Season,
   TreeModel,
   TreeParams,
 } from "./types";
@@ -64,6 +66,8 @@ export type EngineView = {
   wind: number;
   paletteId: PaletteId;
   overlay: OverlayMode;
+  season: Season;
+  atmosphere: Atmosphere;
   growNonce: number;
   originX: number;
 };
@@ -75,6 +79,8 @@ export class TreeEngine {
   private palette: PreparedPalette;
   private params: TreeParams;
   private overlay: OverlayMode = "leaves";
+  private season: Season = "summer";
+  private atmosphere: Atmosphere = "clear";
   private wind = 0.42;
   private originX = 0.54;
   private growthTime = 0;
@@ -131,6 +137,8 @@ export class TreeEngine {
     this.wind = view.wind;
     this.originX = view.originX;
     this.overlay = view.overlay;
+    this.season = view.season;
+    this.atmosphere = view.atmosphere;
     if (view.paletteId !== this.palette.raw.id) {
       this.palette = preparePalette(PALETTES[view.paletteId]);
     }
@@ -164,12 +172,82 @@ export class TreeEngine {
   }
 
   draw() {
-    const { ctx, cssW: w, cssH: h } = this;
+    const { cssW: w, cssH: h } = this;
     this.drawSky(w, h);
+    if (this.atmosphere === "stars") this.drawStars(w, h);
     this.drawMoon(w, h);
     this.drawGround(w, h);
     this.drawTree(w, h);
     this.drawParticles(w, h);
+    this.drawWeather(w, h);
+  }
+
+  private drawStars(w: number, h: number) {
+    const { ctx } = this;
+    ctx.save();
+    for (let i = 0; i < 90; i++) {
+      const x = ((i * 83.17 + 19) % 1000) / 1000 * w;
+      const y = ((i * 47.73 + 11) % 1000) / 1000 * h * 0.72;
+      const pulse = 0.35 + 0.55 * (0.5 + 0.5 * Math.sin(this.time * (0.7 + (i % 7) * 0.09) + i));
+      const r = i % 13 === 0 ? 1.7 : 0.65 + (i % 4) * 0.18;
+      ctx.fillStyle = `rgba(235,242,255,${pulse})`;
+      ctx.beginPath();
+      ctx.arc(x, y, r, 0, TAU);
+      ctx.fill();
+    }
+    ctx.restore();
+  }
+
+  private drawWeather(w: number, h: number) {
+    const { ctx } = this;
+    const calm = this.reduceMotion;
+    ctx.save();
+
+    if (this.atmosphere === "rain") {
+      ctx.strokeStyle = "rgba(185,220,242,0.48)";
+      ctx.lineWidth = 1.15;
+      for (let i = 0; i < 120; i++) {
+        const speed = 460 + (i % 9) * 22;
+        const y = calm ? ((i * 61) % h) : (i * 71 + this.time * speed) % (h + 40) - 20;
+        const x = (i * 97 + y * 0.17) % (w + 30) - 15;
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        ctx.lineTo(x - 7, y + 17);
+        ctx.stroke();
+      }
+    }
+
+    const falling = this.season === "winter" || this.season === "autumn" || this.season === "spring";
+    if (falling) {
+      const count = this.season === "winter" ? 88 : 58;
+      for (let i = 0; i < count; i++) {
+        const speed = this.season === "winter" ? 28 + (i % 7) * 5 : 45 + (i % 8) * 7;
+        const y = calm ? ((i * 79) % h) : (i * 67 + this.time * speed) % (h + 30) - 15;
+        const drift = Math.sin(this.time * 0.8 + i * 1.7) * (10 + (i % 6) * 2);
+        const x = ((i * 109.3) % (w + 40)) - 20 + drift;
+        const size = 2 + (i % 5) * 0.55;
+
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.rotate(this.time * 0.55 + i);
+        if (this.season === "winter") {
+          ctx.fillStyle = `rgba(245,250,255,${0.45 + (i % 4) * 0.12})`;
+          ctx.beginPath();
+          ctx.arc(0, 0, size, 0, TAU);
+          ctx.fill();
+        } else {
+          ctx.fillStyle =
+            this.season === "spring"
+              ? i % 3 === 0 ? "rgba(255,220,235,0.82)" : "rgba(244,175,204,0.78)"
+              : i % 3 === 0 ? "rgba(222,155,54,0.82)" : i % 2 ? "rgba(177,73,35,0.82)" : "rgba(238,190,74,0.78)";
+          ctx.beginPath();
+          ctx.ellipse(0, 0, size * 1.6, size * 0.72, 0, 0, TAU);
+          ctx.fill();
+        }
+        ctx.restore();
+      }
+    }
+    ctx.restore();
   }
 
   private stepParticles(dt: number) {
