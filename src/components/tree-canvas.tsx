@@ -15,6 +15,8 @@ export function TreeCanvas({ originX }: { originX: number }) {
   const wind = useTreeStore((s) => s.wind);
   const paletteId = useTreeStore((s) => s.paletteId);
   const overlay = useTreeStore((s) => s.overlay);
+  const season = useTreeStore((s) => s.season);
+  const atmosphere = useTreeStore((s) => s.atmosphere);
   const growNonce = useTreeStore((s) => s.growNonce);
 
   useEffect(() => {
@@ -32,6 +34,8 @@ export function TreeCanvas({ originX }: { originX: number }) {
       wind,
       paletteId,
       overlay,
+      season,
+      atmosphere,
       growNonce,
       originX: originRef.current,
     });
@@ -68,10 +72,12 @@ export function TreeCanvas({ originX }: { originX: number }) {
       wind,
       paletteId,
       overlay,
+      season,
+      atmosphere,
       growNonce,
       originX,
     });
-  }, [seed, angle, depth, length, wind, paletteId, overlay, growNonce, originX]);
+  }, [seed, angle, depth, length, wind, paletteId, overlay, season, atmosphere, growNonce, originX]);
 
   return (
     <canvas
