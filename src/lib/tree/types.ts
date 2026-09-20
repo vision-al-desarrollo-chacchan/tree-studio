@@ -1,5 +1,8 @@
 export type OverlayMode = "none" | "leaves" | "flowers" | "both";
 
+export type Season = "spring" | "summer" | "autumn" | "winter";
+export type Atmosphere = "clear" | "rain" | "stars";
+
 export type PaletteId = "bosque" | "otono" | "cerezo" | "niebla" | "luna";
 
 export type TreeParams = {
