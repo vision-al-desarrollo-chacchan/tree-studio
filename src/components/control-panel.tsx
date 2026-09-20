@@ -1,9 +1,10 @@
 import type { ReactNode } from "react";
-import { Flower2, Leaf, RefreshCw, Spline, Trees } from "lucide-react";
+import { CloudRain, Flower2, Leaf, RefreshCw, Snowflake, Sparkles, Spline, Sun, Trees, Wind } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { PALETTE_LIST } from "@/lib/tree/palettes";
 import type { OverlayMode } from "@/lib/tree/types";
+import type { Atmosphere, Season } from "@/lib/tree/types";
 import { cn } from "@/lib/utils";
 import { useTreeStore } from "@/store/tree-store";
 
@@ -12,6 +13,19 @@ const OVERLAYS: { id: OverlayMode; label: string; icon: typeof Leaf }[] = [
   { id: "leaves", label: "Hojas", icon: Leaf },
   { id: "flowers", label: "Flores", icon: Flower2 },
   { id: "both", label: "Ambas", icon: Trees },
+];
+
+const SEASONS: { id: Season; label: string; icon: typeof Leaf }[] = [
+  { id: "spring", label: "Primavera", icon: Flower2 },
+  { id: "summer", label: "Verano", icon: Sun },
+  { id: "autumn", label: "Otoño", icon: Wind },
+  { id: "winter", label: "Invierno", icon: Snowflake },
+];
+
+const ATMOSPHERES: { id: Atmosphere; label: string; icon: typeof Sun }[] = [
+  { id: "clear", label: "Despejado", icon: Sun },
+  { id: "rain", label: "Lluvia", icon: CloudRain },
+  { id: "stars", label: "Estrellas", icon: Sparkles },
 ];
 
 function Field({
@@ -41,15 +55,61 @@ export function ControlFields() {
   const wind = useTreeStore((s) => s.wind);
   const paletteId = useTreeStore((s) => s.paletteId);
   const overlay = useTreeStore((s) => s.overlay);
+  const season = useTreeStore((s) => s.season);
+  const atmosphere = useTreeStore((s) => s.atmosphere);
   const setAngle = useTreeStore((s) => s.setAngle);
   const setDepth = useTreeStore((s) => s.setDepth);
   const setLength = useTreeStore((s) => s.setLength);
   const setWind = useTreeStore((s) => s.setWind);
   const setPaletteId = useTreeStore((s) => s.setPaletteId);
   const setOverlay = useTreeStore((s) => s.setOverlay);
+  const setSeason = useTreeStore((s) => s.setSeason);
+  const setAtmosphere = useTreeStore((s) => s.setAtmosphere);
 
   return (
     <div className="flex flex-col gap-5">
+      <div className="flex flex-col gap-2">
+        <span className="text-xs font-medium tracking-wide text-muted">Estación</span>
+        <div className="grid grid-cols-2 gap-1 rounded-lg bg-surface-2 p-1">
+          {SEASONS.map(({ id, label, icon: Icon }) => (
+            <button
+              key={id}
+              type="button"
+              aria-pressed={season === id}
+              onClick={() => setSeason(id)}
+              className={cn(
+                "flex h-10 items-center justify-center gap-1.5 rounded-md text-xs transition-colors outline-none focus-visible:ring-2 focus-visible:ring-accent/50",
+                season === id ? "bg-accent text-accent-fg" : "text-muted hover:text-fg",
+              )}
+            >
+              <Icon className="size-3.5" />
+              {label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-2">
+        <span className="text-xs font-medium tracking-wide text-muted">Ambiente</span>
+        <div className="grid grid-cols-3 gap-1 rounded-lg bg-surface-2 p-1">
+          {ATMOSPHERES.map(({ id, label, icon: Icon }) => (
+            <button
+              key={id}
+              type="button"
+              aria-pressed={atmosphere === id}
+              onClick={() => setAtmosphere(id)}
+              className={cn(
+                "flex h-11 flex-col items-center justify-center gap-0.5 rounded-md text-2xs transition-colors outline-none focus-visible:ring-2 focus-visible:ring-accent/50",
+                atmosphere === id ? "bg-accent text-accent-fg" : "text-muted hover:text-fg",
+              )}
+            >
+              <Icon className="size-3.5" />
+              {label}
+            </button>
+          ))}
+        </div>
+      </div>
+
       <Field label="Ángulo" value={`${Math.round(angle)}°`}>
         <Slider
           aria-label="Ángulo de ramificación"
